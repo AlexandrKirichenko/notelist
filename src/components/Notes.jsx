@@ -1,26 +1,35 @@
 import React, {useId, useState} from 'react'
 import './App.css';
 
+
 function App() {
   const [value, setValue] = useState('');
   const [parId, setParId] = useState(null);
   
   const [notes, setNotes] = useState({
     1: {title: 'title 1', parentId: 0},
+    2: {title: 'title 2', parentId: 1},
+    3: {title: 'title 3', parentId: 1},
+    4: {title: 'title 4', parentId: 2},
+    5: {title: 'title 5', parentId: 2},
+    6: {title: 'title 6', parentId: 3},
+    7: {title: 'title 7', parentId: 3},
+    8: {title: 'title 8', parentId: 7},
+    9: {title: 'title 9', parentId: 7},
   },);
   
   const [maxId, setMaxId] = useState(9);
   
-  console.log('value: ', value, 'parId: ', parId, 'notes:', notes);
+  // console.log('value: ', value, 'parId: ', parId, 'notes:', notes);
   
   
   const getNotes = (notes) => {
     const notesForRender = {};
     const notesKeyList = Object.keys(notes);
     
+    
     notesKeyList.forEach((notesKey) => {
       const {parentId, ...currentNotesForRender} = notes[notesKey];
-     
       if (!notesForRender[notesKey]) {
         notesForRender[notesKey] = {
           ...currentNotesForRender,
@@ -28,10 +37,9 @@ function App() {
         };
       }
     });
-    
     notesKeyList.forEach((notesKey) => {
       const {parentId} = notes[notesKey];
-      if (parentId || 0) {
+      if (parentId) {
         notesForRender[parentId].children.push(notesKey);
       }
     });
@@ -45,7 +53,6 @@ function App() {
   
   const [addSubElementParentId, setAddSubElementParentId] = useState(null);
   const [addSubElementTitle, setAddSubElementTitle] = useState('');
-  const [ITitle,setITitle] = useState('');
   
   const handleAddSubElement = (id) => {
     
@@ -69,26 +76,11 @@ function App() {
     setNotes(prev => ({...prev, [newMaxId]: newSubItem}))
   }
   
-  const handleAdd = (id,title) => {
-    const newMaxId = maxId + 1;
-    setMaxId(newMaxId);
-    setNotes(prev => ({...prev, [newMaxId]: {title: title, parentId: Object.values(notes).at(-1).parentId}}))
-    setITitle('')
-  }
   
   const Notes = ({id}) => {
     
     return (
-      <>
-        <div>
-          <input type="text" value={ITitle}
-                 autoFocus={true}
-                 onChange={e => setITitle(e.target.value)}/>{' '}
-  
-          <button onClick={() => handleAdd(id, ITitle)}>ADD</button>
-        </div>
-        
-      <div key={id}  style={{
+      <div key={id} style={{
         padding: "20px",
         border: '1px solid black',
         width: 'fit-content',
@@ -96,9 +88,8 @@ function App() {
         flexDirection: "column",
         gap: '20px'
       }}>
-        
         <div>
-          {notesForRender[id].title}
+          {notesForRender[id].title}{` - `}
           {
             id === addSubElementParentId
             ?
@@ -124,7 +115,6 @@ function App() {
         }}>{notesForRender[id].children.map((childId) => <Notes key={childId} id={childId}/>)}</div>
       
       </div>
-      </>
     )
   }
   
